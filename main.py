@@ -2,6 +2,7 @@ import os
 import argparse
 
 from src.ConfidenceIntervalVideoProcessor import ConfidenceIntervalVideoProcessor
+from src.EmojiVideoProcessor import EmojiVideoProcessor
 from src.HeadPointsVideoProcessor import HeadPointsVideoProcessor
 from src.DeadliftRepCountVideoProcessor import DeadliftRepCountVideoProcessor
 from src.OutlineVideoProcessor import OutlineVideoProcessor
@@ -13,6 +14,7 @@ dl_rep_count_type = 'dl'
 outline_type = 'outline'
 shoulder_to_knee_type = 'shoulder_knee'
 head_type = 'head'
+emoji_type = 'emoji'
 
 
 if __name__ == '__main__':
@@ -20,7 +22,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Process a video file for deadlift analysis.')
     parser.add_argument('-f', '--input_filename', type=str, required=True, help='Filename of the input video file (located in data/raw directory).')
-    parser.add_argument('-t', '--processor_type', type=str, choices=[confidence_interval_type, dl_rep_count_type, shoulder_to_knee_type, head_type, outline_type], required=True, help='Type of video processor to use.')
+    parser.add_argument('-t', '--processor_type', type=str, choices=[confidence_interval_type, dl_rep_count_type, shoulder_to_knee_type, head_type, outline_type, emoji_type], required=True, help='Type of video processor to use.')
 
     args = parser.parse_args()
 
@@ -44,6 +46,8 @@ if __name__ == '__main__':
         video_processor = HeadPointsVideoProcessor()
     elif processor_type == outline_type:
         video_processor = OutlineVideoProcessor()
+    elif processor_type == emoji_type:
+        video_processor = EmojiVideoProcessor('emoji.png')
     else:
         raise ValueError(f'Unknown processor type: {processor_type}')
 
