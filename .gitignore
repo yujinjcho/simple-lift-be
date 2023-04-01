@@ -2,3 +2,6 @@ venv
 secret
 __pycache__
 .idea
+data
+.DS_Store
+venv2

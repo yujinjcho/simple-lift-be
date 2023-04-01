@@ -44,8 +44,6 @@ def process_mp(input_file, output_file):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     writer = cv2.VideoWriter(output_file, fourcc, fps, (width, height))
 
-    tracking_confidence = .85
-    # with mp_holistic.Holistic(min_detection_confidence=tracking_confidence, min_tracking_confidence=tracking_confidence) as holistic:
     with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.8) as pose:
         while video_capture.isOpened():
             has_frame, frame = video_capture.read()
