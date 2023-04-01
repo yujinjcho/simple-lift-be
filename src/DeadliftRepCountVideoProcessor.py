@@ -26,7 +26,7 @@ bone_connections = [
 ]
 
 
-class RepCountVideoProcessor:
+class DeadliftRepCountVideoProcessor:
     def __init__(self):
         self.rep_state = 'pending'
         self.rep_count = 0

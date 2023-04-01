@@ -4,6 +4,7 @@ import mediapipe as mp
 from src.utils import create_writer_and_frame_generator
 
 mp_pose = mp.solutions.pose
+mp_holistic = mp.solutions.holistic
 
 
 def run_pipeline():
@@ -36,9 +37,14 @@ def process_video(input_file, output_file, video_processor):
     writer, frame_generator = create_writer_and_frame_generator(input_file, output_file)
 
     with mp_pose.Pose(min_detection_confidence=0.8, min_tracking_confidence=0.8) as pose:
+    # with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+
         for frame in frame_generator:
             image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
             result = pose.process(image_rgb)
+            # result = holistic.process(image_rgb)
+
             if result.pose_landmarks:
                 # Get the landmarks on the original frame
                 landmarks = {}
