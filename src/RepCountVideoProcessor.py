@@ -27,7 +27,6 @@ bone_connections = [
 
 
 class RepCountVideoProcessor:
-
     def __init__(self):
         self.rep_state = 'pending'
         self.rep_count = 0
@@ -46,46 +45,16 @@ class RepCountVideoProcessor:
         for connection in bone_connections:
             start, end = connection
 
-            # don't draw if we're using stored ones
-            # is_ankle = start in [mp_holistic.PoseLandmark.LEFT_ANKLE.value, mp_holistic.PoseLandmark.RIGHT_ANKLE.value]
-            # if self.highest_confidence_heels is not None and is_ankle:
-            #     continue
             if self.should_skip(start):
                 continue
 
             cv2.line(frame, landmarks[start], landmarks[end], self.line_color, self.line_thickness)
 
         left_angle, right_angle = self.update_rep_state(landmarks)
-
-        rep_text = f"Rep: {self.rep_count}"
-        state_text = f"State: {self.rep_state}"
-        left_angle = f"Left angle: {left_angle}"
-        right_angle = f"Right angle: {right_angle}"
-
-        text_color = (255, 255, 255)
-        font_scale = 1.5
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        text_thickness = 2
-        line_type = cv2.LINE_AA
-
-        text_size_rep = cv2.getTextSize(rep_text, font, font_scale, text_thickness)[0]
-        text_size_state = cv2.getTextSize(state_text, font, font_scale, text_thickness)[0]
-        text_size_left_angle = cv2.getTextSize(left_angle, font, font_scale, text_thickness)[0]
-        text_size_right_angle = cv2.getTextSize(right_angle, font, font_scale, text_thickness)[0]
-
-        rep_text_y = int(frame.shape[0] * 0.05) + text_size_rep[1]
-        state_text_y = rep_text_y + text_size_state[1] + 20
-        left_angle_text_y = state_text_y + text_size_left_angle[1] + 20
-        right_angle_text_y = left_angle_text_y + text_size_right_angle[1] + 20
-
-        cv2.putText(frame, rep_text, (10, rep_text_y), font, font_scale, text_color, text_thickness, line_type)
-        cv2.putText(frame, state_text, (10, state_text_y), font, font_scale, text_color, text_thickness, line_type)
-        cv2.putText(frame, left_angle, (10, left_angle_text_y), font, font_scale, text_color, text_thickness, line_type)
-        cv2.putText(frame, right_angle, (10, right_angle_text_y), font, font_scale, text_color, text_thickness,
-                    line_type)
+        self.render_labels(frame, left_angle, right_angle)
 
     def should_skip(self, connection):
-        """If we're already tracking heels and it's a heel skip"""
+        # If we're already tracking heels and it's a heel skip
         is_ankle = connection in [mp_holistic.PoseLandmark.LEFT_HEEL.value, mp_holistic.PoseLandmark.RIGHT_HEEL.value]
         return self.highest_confidence_heels is not None and is_ankle
 
@@ -148,3 +117,31 @@ class RepCountVideoProcessor:
 
             cv2.circle(frame, left_ankle, 5, (0, 0, 255), -1)
             cv2.circle(frame, right_ankle, 5, (0, 0, 255), -1)
+
+    def render_labels(self, frame, left_angle, right_angle):
+        rep_text = f"Rep: {self.rep_count}"
+        state_text = f"State: {self.rep_state}"
+        left_angle = f"Left angle: {left_angle}"
+        right_angle = f"Right angle: {right_angle}"
+
+        text_color = (255, 255, 255)
+        font_scale = 1.5
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        text_thickness = 2
+        line_type = cv2.LINE_AA
+
+        text_size_rep = cv2.getTextSize(rep_text, font, font_scale, text_thickness)[0]
+        text_size_state = cv2.getTextSize(state_text, font, font_scale, text_thickness)[0]
+        text_size_left_angle = cv2.getTextSize(left_angle, font, font_scale, text_thickness)[0]
+        text_size_right_angle = cv2.getTextSize(right_angle, font, font_scale, text_thickness)[0]
+
+        rep_text_y = int(frame.shape[0] * 0.05) + text_size_rep[1]
+        state_text_y = rep_text_y + text_size_state[1] + 20
+        left_angle_text_y = state_text_y + text_size_left_angle[1] + 20
+        right_angle_text_y = left_angle_text_y + text_size_right_angle[1] + 20
+
+        cv2.putText(frame, rep_text, (10, rep_text_y), font, font_scale, text_color, text_thickness, line_type)
+        cv2.putText(frame, state_text, (10, state_text_y), font, font_scale, text_color, text_thickness, line_type)
+        cv2.putText(frame, left_angle, (10, left_angle_text_y), font, font_scale, text_color, text_thickness, line_type)
+        cv2.putText(frame, right_angle, (10, right_angle_text_y), font, font_scale, text_color, text_thickness,
+                    line_type)
