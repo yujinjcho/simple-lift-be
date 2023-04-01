@@ -10,8 +10,8 @@ mp_pose = mp.solutions.pose
 bone_connections = [
     (mp_holistic.PoseLandmark.LEFT_KNEE.value, mp_holistic.PoseLandmark.LEFT_HIP.value),
     (mp_holistic.PoseLandmark.RIGHT_KNEE.value, mp_holistic.PoseLandmark.RIGHT_HIP.value),
-    (mp_holistic.PoseLandmark.LEFT_ANKLE.value, mp_holistic.PoseLandmark.LEFT_KNEE.value),
-    (mp_holistic.PoseLandmark.RIGHT_ANKLE.value, mp_holistic.PoseLandmark.RIGHT_KNEE.value),
+    (mp_holistic.PoseLandmark.LEFT_HEEL.value, mp_holistic.PoseLandmark.LEFT_KNEE.value),
+    (mp_holistic.PoseLandmark.RIGHT_HEEL.value, mp_holistic.PoseLandmark.RIGHT_KNEE.value),
     (mp_holistic.PoseLandmark.LEFT_HIP.value, mp_holistic.PoseLandmark.RIGHT_HIP.value),
     (mp_holistic.PoseLandmark.LEFT_HIP.value, mp_holistic.PoseLandmark.LEFT_SHOULDER.value),
     (mp_holistic.PoseLandmark.RIGHT_HIP.value, mp_holistic.PoseLandmark.RIGHT_SHOULDER.value),
@@ -47,8 +47,10 @@ class RepCountVideoProcessor:
             start, end = connection
 
             # don't draw if we're using stored ones
-            is_ankle = start in [mp_holistic.PoseLandmark.LEFT_ANKLE.value, mp_holistic.PoseLandmark.RIGHT_ANKLE.value]
-            if self.highest_confidence_heels is not None and is_ankle:
+            # is_ankle = start in [mp_holistic.PoseLandmark.LEFT_ANKLE.value, mp_holistic.PoseLandmark.RIGHT_ANKLE.value]
+            # if self.highest_confidence_heels is not None and is_ankle:
+            #     continue
+            if self.should_skip(start):
                 continue
 
             cv2.line(frame, landmarks[start], landmarks[end], self.line_color, self.line_thickness)
@@ -81,6 +83,11 @@ class RepCountVideoProcessor:
         cv2.putText(frame, left_angle, (10, left_angle_text_y), font, font_scale, text_color, text_thickness, line_type)
         cv2.putText(frame, right_angle, (10, right_angle_text_y), font, font_scale, text_color, text_thickness,
                     line_type)
+
+    def should_skip(self, connection):
+        """If we're already tracking heels and it's a heel skip"""
+        is_ankle = connection in [mp_holistic.PoseLandmark.LEFT_HEEL.value, mp_holistic.PoseLandmark.RIGHT_HEEL.value]
+        return self.highest_confidence_heels is not None and is_ankle
 
     def update_rep_state(self, landmarks):
         left_shoulder = landmarks[mp_holistic.PoseLandmark.LEFT_SHOULDER.value]
