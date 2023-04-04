@@ -6,11 +6,10 @@ mp_pose = mp.solutions.pose
 
 
 class Deadlift2VideoProcessor:
-    def __init__(self, elbow_processor, moment_arm_processor):
-        self.elbow_processor = elbow_processor
-        self.moment_arm_processor = moment_arm_processor
+    def __init__(self, *processors):
+        self.processors = processors
 
     def draw(self, frame, landmarks, pose_landmarks):
-        self.elbow_processor.draw(frame, landmarks, pose_landmarks)
-        self.moment_arm_processor.draw(frame, landmarks, pose_landmarks)
+        for processor in self.processors:
+            processor.draw(frame, landmarks, pose_landmarks)
 

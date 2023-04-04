@@ -9,21 +9,25 @@ mp_pose = mp.solutions.pose
 class ElbowTrackingVideoProcessor:
 
     def __init__(self):
-        # self.left_elbow_history = []
         self.right_elbow_history = []
-        self.line_color = (0, 200, 0)
+        # BGR format
+        self.line_color_up = (255, 128, 0)
+        self.line_color_down = (153, 153, 255)
         self.line_thickness = 2
 
     def draw(self, frame, landmarks, pose_landmarks):
-        # left_elbow_idx = mp_holistic.PoseLandmark.LEFT_SHOULDER.value
         right_elbow_idx = mp_holistic.PoseLandmark.RIGHT_ELBOW.value
-
-        # left_elbow = landmarks[left_elbow_idx]
         right_elbow = landmarks[right_elbow_idx]
-
-        # self.left_elbow_history.append(left_elbow)
         self.right_elbow_history.append(right_elbow)
 
         for i in range(len(self.right_elbow_history) - 1):
-            cv2.line(frame, self.right_elbow_history[i], self.right_elbow_history[i + 1], self.line_color,
-                     self.line_thickness)
+            current_point = self.right_elbow_history[i]
+            next_point = self.right_elbow_history[i + 1]
+
+            # Choose color based on direction (up or down)
+            if next_point[1] > current_point[1]:
+                line_color = self.line_color_down
+            else:
+                line_color = self.line_color_up
+
+            cv2.line(frame, current_point, next_point, line_color, self.line_thickness)
